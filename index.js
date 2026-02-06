@@ -13,13 +13,13 @@ app.use(express.static(path.join(__dirname, "/public")));
 app.set("views", path.join(__dirname, '/views'));
 app.set("view engine", "ejs");
 
-const databaseUrl = process.env.DATABASE_URL;
+const databaseUrl = process.env.DATABASE_URL || process.env.MYSQL_URL;
 let dbConfig = {
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  database: process.env.DB_NAME,
-  password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT ? Number(process.env.DB_PORT) : undefined,
+  host: process.env.DB_HOST || process.env.MYSQLHOST,
+  user: process.env.DB_USER || process.env.MYSQLUSER,
+  database: process.env.DB_NAME || process.env.MYSQLDATABASE,
+  password: process.env.DB_PASSWORD || process.env.MYSQLPASSWORD,
+  port: Number(process.env.DB_PORT || process.env.MYSQLPORT || 3306),
 };
 
 if (databaseUrl) {
