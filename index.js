@@ -13,14 +13,36 @@ app.use(express.static(path.join(__dirname, "/public")));
 app.set("views", path.join(__dirname, '/views'));
 app.set("view engine", "ejs");
 
-const dbConfig = {
+const databaseUrl = process.env.DATABASE_URL;
+let dbConfig = {
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   database: process.env.DB_NAME,
   password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT ? Number(process.env.DB_PORT) : undefined,
 };
 
-const connection = mysql.createConnection(dbConfig);
+if (databaseUrl) {
+  const parsed = new URL(databaseUrl);
+  dbConfig = {
+    host: parsed.hostname,
+    user: decodeURIComponent(parsed.username),
+    password: decodeURIComponent(parsed.password),
+    database: parsed.pathname.replace(/^\//, ""),
+    port: parsed.port ? Number(parsed.port) : undefined,
+  };
+}
+
+if (process.env.DB_SSL === "true" || process.env.MYSQL_SSL === "true") {
+  dbConfig.ssl = { rejectUnauthorized: true };
+}
+
+const pool = mysql.createPool({
+  ...dbConfig,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+});
 
 const createUsersTable = `
   CREATE TABLE IF NOT EXISTS users (
@@ -45,16 +67,16 @@ const createNoticesTable = `
   )
 `;
 
-connection.query(createUsersTable, (err) => {
+pool.query(createUsersTable, (err) => {
   if (err) console.log("Error creating users table:", err);
   else console.log("Users table checked/created");
 });
 
-connection.query(createNoticesTable, (err) => {
+pool.query(createNoticesTable, (err) => {
   if (err) console.log("Error creating notices table:", err);
   else {
     console.log("Notices table checked/created");
-    connection.query("SELECT * FROM notices LIMIT 1", (err, result) => {
+    pool.query("SELECT * FROM notices LIMIT 1", (err, result) => {
       if (!err) console.log("Database connection & query verified.");
     });
   }
@@ -70,7 +92,7 @@ app.get("/", (req, res) => {
 
 app.get("/admin", (req, res) => {
   try {
-    connection.query("SELECT * FROM notices", (err, results) => {
+    pool.query("SELECT * FROM notices", (err, results) => {
       if (err) throw err;
       res.render("index.ejs", { announcements: results });
     });
@@ -81,7 +103,7 @@ app.get("/admin", (req, res) => {
 
 app.get("/users", (req, res) => {
   try {
-    connection.query("SELECT * FROM notices", (err, results) => {
+    pool.query("SELECT * FROM notices", (err, results) => {
       if (err) throw err;
       res.render("users.ejs", { announcements: results });
     });
@@ -97,7 +119,7 @@ app.get("/new", (req, res) => {
 app.post("/new", (req, res) => {
   const { title, content, category, event_date, venue, admin_id } = req.body;
   const roles = 'admin';
-  connection.query("INSERT INTO notices (title, content, category, event_date, venue, roles) VALUES (?, ?, ?, ?, ?, ?)", [title, content, category, event_date, venue, roles], (err, results) => {
+  pool.query("INSERT INTO notices (title, content, category, event_date, venue, roles) VALUES (?, ?, ?, ?, ?, ?)", [title, content, category, event_date, venue, roles], (err, results) => {
     if (err) throw err;
     res.redirect("/admin");
   });
@@ -105,7 +127,7 @@ app.post("/new", (req, res) => {
 
 app.get("/edit/:id", (req, res) => {
   let { id } = req.params;
-  connection.query("SELECT * FROM notices WHERE id = ?", [id], (err, results) => {
+  pool.query("SELECT * FROM notices WHERE id = ?", [id], (err, results) => {
     if (err) throw err;
     if (results.length === 0) {
       return res.redirect("/admin");
@@ -116,7 +138,7 @@ app.get("/edit/:id", (req, res) => {
 
 app.get("/delete/:id", (req, res) => {
   let { id } = req.params;
-  connection.query("SELECT * FROM notices WHERE id = ?", [id], (err, results) => {
+  pool.query("SELECT * FROM notices WHERE id = ?", [id], (err, results) => {
     if (err) throw err;
     if (results.length === 0) {
       return res.redirect("/admin");
@@ -127,7 +149,7 @@ app.get("/delete/:id", (req, res) => {
 
 app.delete("/delete/:id", (req, res) => {
   let { id } = req.params;
-  connection.query("DELETE FROM notices WHERE id = ?", [id], (err, results) => {
+  pool.query("DELETE FROM notices WHERE id = ?", [id], (err, results) => {
     if (err) throw err;
     res.redirect("/admin");
   });
@@ -136,7 +158,7 @@ app.delete("/delete/:id", (req, res) => {
 app.patch("/edit/:id", (req, res) => {
   let { id } = req.params;
   let { title, content, category, event_date, venue } = req.body;
-  connection.query(
+  pool.query(
     "UPDATE notices SET title = ?, content = ?, category = ?, event_date = ?, venue = ? WHERE id = ?",
     [title, content, category, event_date, venue, id],
     (err, results) => {
@@ -152,7 +174,13 @@ app.get("/signup", (req, res) => {
 
 app.post("/signup", (req, res) => {
   const { username, email, password } = req.body;
-  connection.query("INSERT INTO users (username, email, password) VALUES (?, ?, ?)", [username, email, password], (err, results) => {
+  const normalizedEmail = String(email || "").trim().toLowerCase();
+  const normalizedUsername = String(username || "").trim();
+  const normalizedPassword = String(password || "");
+  if (!normalizedEmail || !normalizedPassword || !normalizedUsername) {
+    return res.redirect("/signup");
+  }
+  pool.query("INSERT INTO users (username, email, password) VALUES (?, ?, ?)", [normalizedUsername, normalizedEmail, normalizedPassword], (err, results) => {
     if (err) {
       console.error(err);
       return res.redirect("/signup");
@@ -167,7 +195,12 @@ app.get("/login", (req, res) => {
 
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
-  connection.query("SELECT * FROM users WHERE email = ? AND password = ?", [email, password], (err, results) => {
+  const normalizedEmail = String(email || "").trim().toLowerCase();
+  const normalizedPassword = String(password || "");
+  if (!normalizedEmail || !normalizedPassword) {
+    return res.redirect("/login");
+  }
+  pool.query("SELECT * FROM users WHERE email = ? AND password = ?", [normalizedEmail, normalizedPassword], (err, results) => {
     if (err) {
       console.error(err);
       return res.redirect("/login");
@@ -182,7 +215,7 @@ app.post("/login", (req, res) => {
 
 app.post("/interested/:id", (req, res) => {
   const { id } = req.params;
-  connection.query("UPDATE notices SET interested_count = interested_count + 1 WHERE id = ?", [id], (err, results) => {
+  pool.query("UPDATE notices SET interested_count = interested_count + 1 WHERE id = ?", [id], (err, results) => {
     if (err) {
       console.log(err);
       return res.redirect("/users");
