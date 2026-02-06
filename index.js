@@ -64,6 +64,10 @@ app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}/login`);
 });
 
+app.get("/", (req, res) => {
+  res.redirect("/login");
+});
+
 app.get("/admin", (req, res) => {
   try {
     connection.query("SELECT * FROM notices", (err, results) => {
