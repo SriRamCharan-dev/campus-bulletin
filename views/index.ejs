@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Bulletin</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Admin Dashboard</h1>
+        <p style="text-align: center; margin-bottom: 2rem; color: var(--text-secondary);">Manage campus announcements,
+            track student interest, and oversee events.</p>
+        <ul>
+            <% for(let announcement of announcements) { %>
+                <li>
+                    <h2>
+                        <%= announcement.title %>
+                    </h2>
+                    <p class="card-id">
+                        ID: <%= announcement.id %>
+                    </p>
+                    <p>
+                        <%= announcement.content %>
+                    </p>
+                    <p class="meta-info">
+                        <strong>Category:</strong>
+                        <%= announcement.category %><br>
+                            <strong>Date:</strong>
+                            <%= announcement.event_date %><br>
+                                <strong>Venue:</strong>
+                                <%= announcement.venue %><br>
+                                    <strong>posted on:</strong>
+                                    <%= announcement.created_at %>
+                                        <strong>posted by:</strong>
+                                        <%= announcement.roles %><br>
+                                            <strong>Interested Users:</strong>
+                                            <%= announcement.interested_count || 0 %>
+                    </p>
+                    <div style="margin-top: 1rem;">
+                        <button><a href="/edit/<%= announcement.id %>">Edit</a></button>
+                        <button class="danger"><a href="/delete/<%= announcement.id %>">Delete</a></button>
+                    </div>
+                </li>
+                <% } %>
+        </ul>
+
+        <div style="text-align: center; margin-top: 2rem;">
+            <button>
+                <a href="/new">Add New Announcement</a>
+            </button>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Campus Bulletin Admin Panel. All rights reserved.</p>
+    </footer>
+</body>
+
+</html>

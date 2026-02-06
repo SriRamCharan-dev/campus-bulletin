@@ -1,0 +1,22 @@
+{
+  "name": "crud",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sriramcharan",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^17.2.4",
+    "ejs": "^3.1.10",
+    "express": "^5.2.1",
+    "method-override": "^3.0.0",
+    "mysql2": "^3.16.2",
+    "nodemon": "^3.1.11",
+    "uuid": "^13.0.0"
+  }
+}

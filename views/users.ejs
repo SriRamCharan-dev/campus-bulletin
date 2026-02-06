@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Bulletin</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Campus News & Events</h1>
+        <p style="text-align: center; margin-bottom: 2rem; color: var(--text-secondary);">Stay updated with the latest
+            happenings on campus. Mark your interest and save events!</p>
+        <ul>
+            <% for(let announcement of announcements) { %>
+                <li>
+                    <h2>
+                        <%= announcement.title %>
+                    </h2>
+                    <p class="card-id">ID: <%= announcement.id %>
+                    </p>
+                    <p>
+                        <%= announcement.content %>
+                    </p>
+                    <p class="meta-info">
+                        <strong>Category:</strong>
+                        <%= announcement.category %><br>
+                            <strong>Date:</strong>
+                            <%= announcement.event_date %><br>
+                                <strong>Venue:</strong>
+                                <%= announcement.venue %><br>
+                                    <strong>posted on:</strong>
+                                    <%= announcement.created_at %>
+                                        <strong>posted by:</strong>
+                                        <%= announcement.roles %>
+                    </p>
+                    <div style="margin-top: 1rem;">
+                        <form action="/interested/<%= announcement.id %>" method="POST"
+                            style="display: inline; padding: 0; box-shadow: none; border: none; background: transparent;">
+                            <button type="submit">Interested</button>
+                        </form>
+                        <% var dateObj=new Date(announcement.event_date); var y=dateObj.getFullYear(); var
+                            m=String(dateObj.getMonth() + 1).padStart(2, '0' ); var
+                            d=String(dateObj.getDate()).padStart(2, '0' ); var dateStr="" + y + m + d; var nextDay=new
+                            Date(dateObj); nextDay.setDate(nextDay.getDate() + 1); var ny=nextDay.getFullYear(); var
+                            nm=String(nextDay.getMonth() + 1).padStart(2, '0' ); var
+                            nd=String(nextDay.getDate()).padStart(2, '0' ); var endStr="" + ny + nm + nd; var
+                            gCalUrl="https://calendar.google.com/calendar/render?action=TEMPLATE&text=" +
+                            encodeURIComponent(announcement.title) + "&details=" +
+                            encodeURIComponent(announcement.content) + "&location=" +
+                            encodeURIComponent(announcement.venue) + "&dates=" + dateStr + "/" + endStr; %>
+                            <a href="<%= gCalUrl %>" target="_blank" rel="noopener noreferrer"
+                                style="text-decoration: none;">
+                                <button type="button"
+                                    style="background-color: var(--text-secondary); margin-top: 0;">Add to
+                                    Calendar</button>
+                            </a>
+                    </div>
+                </li>
+                <% } %>
+        </ul>
+        <div style="text-align: center; margin-top: 2rem;">
+            <a href="/login" style="font-weight: bold;">Logout / Admin Login</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Campus Bulletin. Stay Connected.</p>
+    </footer>
+</body>
+
+</html>

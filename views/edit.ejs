@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Announcement</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Edit Announcement</h1>
+        <form method="POST" action="/edit/<%= announcement.id %>?_method=PATCH">
+            <label for="title">Title</label>
+            <input type="text" id="title" name="title" placeholder="title" value="<%= announcement.title %>" required>
+
+            <p class="meta-info" style="margin-bottom: 1rem;">
+                Announcement ID: <strong>
+                    <%= announcement.id %>
+                </strong>
+            </p>
+
+            <label for="content">Content</label>
+            <textarea id="content" name="content" rows="10"><%= announcement.content %></textarea>
+
+            <label for="category">Category</label>
+            <input type="text" id="category" name="category" placeholder="Category" value="<%= announcement.category %>"
+                required>
+
+            <label for="event_date">Date</label>
+            <input type="date" id="event_date" name="event_date" placeholder="Date"
+                value="<%= announcement.event_date %>" required>
+
+            <label for="venue">Venue</label>
+            <input type="text" id="venue" name="venue" placeholder="Venue" value="<%= announcement.venue %>" required>
+
+            <label for="roles">Posted By (Role)</label>
+            <input type="text" id="roles" name="roles" value="<%= announcement.roles || '' %>" readonly
+                style="opacity: 0.6; cursor: not-allowed;">
+
+            <div style="margin-top: 1rem;">
+                <button type="submit">Update Announcement</button>
+            </div>
+
+            <div style="margin-top: 2rem; border-top: 1px solid #CCC7B9; padding-top: 1rem;">
+                <a href="/delete/<%= announcement.id %>" style="color: var(--danger-color); font-weight: bold;">Delete
+                    This Announcement</a>
+            </div>
+        </form>
+        <div style="text-align: center; margin-top: 1rem;">
+            <a href="/admin" style="font-weight: bold;">← Back to Admin Dashboard</a>
+        </div>
+    </div>
+</body>
+
+</html>

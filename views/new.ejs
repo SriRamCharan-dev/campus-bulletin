@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Announcement</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Create New Announcement</h1>
+        <form action="/new" method="POST">
+            <label for="title">Title</label>
+            <input type="text" id="title" name="title" placeholder="Enter title" required>
+
+            <label for="content">Content</label>
+            <textarea id="content" name="content" rows="5" placeholder="Enter announcement content" required></textarea>
+
+            <label for="category">Category</label>
+            <input type="text" id="category" name="category" placeholder="Category" value="" required>
+
+            <label for="event_date">Date</label>
+            <input type="date" id="event_date" name="event_date" placeholder="Date" value="" required>
+
+            <label for="venue">Venue</label>
+            <input type="text" id="venue" name="venue" placeholder="Venue" value="" required>
+
+            <label for="roles">roles</label>
+            <input type="text" id="roles" name="roles" placeholder="roles" value="" required>
+
+            <button type="submit">Submit</button>
+        </form>
+        <div style="text-align: center; margin-top: 1rem;">
+            <a href="/admin" style="font-weight: bold;"> Back to Admin Dashboard</a>
+        </div>
+    </div>
+</body>
+
+</html>
