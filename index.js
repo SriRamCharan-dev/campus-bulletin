@@ -22,7 +22,9 @@ let dbConfig = {
   port: Number(process.env.DB_PORT || process.env.MYSQLPORT || 3306),
 };
 
-if (databaseUrl) {
+// Only use DATABASE_URL if DB_HOST is not explicitly set
+if (databaseUrl && !process.env.DB_HOST) {
+  console.log("Using DATABASE_URL for connection details");
   const parsed = new URL(databaseUrl);
   dbConfig = {
     host: parsed.hostname,
@@ -31,11 +33,15 @@ if (databaseUrl) {
     database: parsed.pathname.replace(/^\//, ""),
     port: parsed.port ? Number(parsed.port) : undefined,
   };
+} else {
+  console.log("Using explicit environment variables (DB_HOST, etc) for connection details");
 }
 
 if (process.env.DB_SSL === "true" || process.env.MYSQL_SSL === "true") {
   dbConfig.ssl = { rejectUnauthorized: true };
 }
+
+console.log("Attempting to connect to database host:", dbConfig.host);
 
 const pool = mysql.createPool({
   ...dbConfig,
