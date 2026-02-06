@@ -22,33 +22,43 @@ const dbConfig = {
 
 const connection = mysql.createConnection(dbConfig);
 
-try {
-  connection.query("SELECT * FROM notices", (err, result) => {
-    if (err) throw err;
-    console.log(result);
-  });
+const createUsersTable = `
+  CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL
+  )
+`;
 
-  const createUsersTable = `
-    CREATE TABLE IF NOT EXISTS users (
-      id INT AUTO_INCREMENT PRIMARY KEY,
-      username VARCHAR(255) NOT NULL,
-      email VARCHAR(255) NOT NULL UNIQUE,
-      password VARCHAR(255) NOT NULL
-    )
-  `;
-  connection.query(createUsersTable, (err) => {
-    if (err) console.log("Error creating users table:", err);
-    else console.log("Users table checked/created");
-  });
+const createNoticesTable = `
+  CREATE TABLE IF NOT EXISTS notices (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL,
+    category VARCHAR(255),
+    event_date DATE,
+    venue VARCHAR(255),
+    roles VARCHAR(255),
+    interested_count INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )
+`;
 
-  const addInterestedColumn = "ALTER TABLE notices ADD COLUMN interested_count INT DEFAULT 0";
-  connection.query(addInterestedColumn, (err) => {
-    if (err && err.code !== 'ER_DUP_FIELDNAME') console.log("Column check (interested_count):", err.message);
-  });
+connection.query(createUsersTable, (err) => {
+  if (err) console.log("Error creating users table:", err);
+  else console.log("Users table checked/created");
+});
 
-} catch (err) {
-  console.log(err);
-}
+connection.query(createNoticesTable, (err) => {
+  if (err) console.log("Error creating notices table:", err);
+  else {
+    console.log("Notices table checked/created");
+    connection.query("SELECT * FROM notices LIMIT 1", (err, result) => {
+      if (!err) console.log("Database connection & query verified.");
+    });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}/login`);
