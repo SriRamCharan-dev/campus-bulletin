@@ -4,28 +4,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up</title>
+    <title>Sign Up · Campus Bulletin</title>
     <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 
 <body>
     <div class="container">
+        <div class="auth-logo"><i class="fa-solid fa-graduation-cap"></i></div>
         <h1>Create Account</h1>
+        <p class="auth-tagline">Join Campus Bulletin to stay in the loop</p>
+
         <form action="/signup" method="POST">
             <label for="username">Username</label>
-            <input type="text" id="username" name="username" placeholder="Enter username" required>
+            <input type="text" id="username" name="username" placeholder="Choose a username" required autocomplete="username">
 
-            <label for="email">Gmail</label>
-            <input type="email" id="email" name="email" placeholder="Enter your Gmail" required>
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="you@example.com" required autocomplete="email">
 
             <label for="password">Password</label>
-            <input type="password" id="password" name="password" placeholder="Create a password" required>
+            <input type="password" id="password" name="password" placeholder="Create a strong password" required autocomplete="new-password">
 
-            <button type="submit">Sign Up</button>
+            <button type="submit" class="wide"><i class="fa-solid fa-user-plus"></i> Create Account</button>
         </form>
-        <div style="text-align: center; margin-top: 1rem;">
-            <p>Already have an account? <a href="/login" style="font-weight: bold;">Login here</a></p>
-            <a href="/users" style="font-weight: bold; display: block; margin-top: 0.5rem;"> Back to Home</a>
+
+        <div class="auth-links">
+            <p>Already have an account? <a href="/login" style="font-weight:700;">Sign in</a></p>
+            <div class="auth-divider">or</div>
+            <p><a href="/users" style="color:var(--text-secondary); font-weight:600;"><i class="fa-solid fa-arrow-left"></i> Back to Home</a></p>
         </div>
     </div>
 </body>

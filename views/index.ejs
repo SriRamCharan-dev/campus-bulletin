@@ -4,54 +4,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Campus Bulletin</title>
+    <title>Admin Dashboard · Campus Bulletin</title>
     <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 
 <body>
     <div class="container">
-        <h1>Admin Dashboard</h1>
-        <p style="text-align: center; margin-bottom: 2rem; color: var(--text-secondary);">Manage campus announcements,
-            track student interest, and oversee events.</p>
-        <ul>
-            <% for(let announcement of announcements) { %>
-                <li>
-                    <h2>
-                        <%= announcement.title %>
-                    </h2>
-                    <p class="card-id">
-                        ID: <%= announcement.id %>
-                    </p>
-                    <p>
-                        <%= announcement.content %>
-                    </p>
-                    <p class="meta-info">
-                        <strong>Category:</strong>
-                        <%= announcement.category %><br>
-                            <strong>Date:</strong>
-                            <%= announcement.event_date %><br>
-                                <strong>Venue:</strong>
-                                <%= announcement.venue %><br>
-                                    <strong>posted on:</strong>
-                                    <%= announcement.created_at %>
-                                        <strong>posted by:</strong>
-                                        <%= announcement.roles %><br>
-                                            <strong>Interested Users:</strong>
-                                            <%= announcement.interested_count || 0 %>
-                    </p>
-                    <div style="margin-top: 1rem;">
-                        <button><a href="/edit/<%= announcement.id %>">Edit</a></button>
-                        <button class="danger"><a href="/delete/<%= announcement.id %>">Delete</a></button>
-                    </div>
-                </li>
-                <% } %>
-        </ul>
 
-        <div style="text-align: center; margin-top: 2rem;">
-            <button>
-                <a href="/new">Add New Announcement</a>
-            </button>
+        <div class="top-actions">
+            <div class="nav-brand">
+                <span class="nav-dot"></span>
+                Campus Bulletin
+            </div>
+            <a href="/login" class="logout-link">
+                <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+            </a>
         </div>
+
+        <div class="page-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+        <h1>Admin Dashboard</h1>
+        <div class="admin-badge"><i class="fa-solid fa-bolt"></i> Admin Panel</div>
+        <p class="page-subtitle">Manage campus announcements, track student interest, and oversee events.</p>
+
+        <div class="stat-row">
+            <div class="stat-chip"><i class="fa-solid fa-layer-group"></i> Total: <strong><%= announcements.length %></strong></div>
+        </div>
+
+        <% if (announcements.length === 0) { %>
+            <div class="empty-state">
+                <span class="empty-icon"><i class="fa-solid fa-clipboard-list"></i></span>
+                <h3>No announcements yet</h3>
+                <p>Create your first announcement to get started.</p>
+            </div>
+        <% } else { %>
+            <ul>
+                <% const badgeClasses = ['badge-blue','badge-purple','badge-green','badge-orange','badge-teal']; %>
+                <% for(let announcement of announcements) { %>
+                    <%
+                        let hash = 0;
+                        for (let c of (announcement.category || '')) hash = (hash * 31 + c.charCodeAt(0)) & 0xff;
+                        const badgeClass = badgeClasses[hash % badgeClasses.length];
+                    %>
+                    <li>
+                        <% if (announcement.category) { %>
+                            <span class="badge <%= badgeClass %>"><%= announcement.category %></span>
+                        <% } %>
+                        <h2><%= announcement.title %></h2>
+                        <p class="card-id">ID: <%= announcement.id %></p>
+                        <p><%= announcement.content %></p>
+                        <p class="meta-info">
+                            <strong><i class="fa-solid fa-calendar-days"></i> Date:</strong> <%= announcement.event_date %><br>
+                            <strong><i class="fa-solid fa-location-dot"></i> Venue:</strong> <%= announcement.venue %><br>
+                            <strong><i class="fa-solid fa-clock"></i> Posted on:</strong> <%= announcement.created_at %> &nbsp;
+                            <strong><i class="fa-solid fa-user"></i> by</strong> <%= announcement.roles %><br>
+                            <strong><i class="fa-solid fa-users"></i> Interested:</strong>
+                            <span class="interested-count">
+                                <i class="fa-solid fa-circle-check"></i>
+                                <%= announcement.interested_count || 0 %> student<%= (announcement.interested_count || 0) === 1 ? '' : 's' %>
+                            </span>
+                        </p>
+                        <div class="btn-group">
+                            <button><a href="/edit/<%= announcement.id %>"><i class="fa-solid fa-pen"></i> Edit</a></button>
+                            <button class="danger"><a href="/delete/<%= announcement.id %>"><i class="fa-solid fa-trash"></i> Delete</a></button>
+                        </div>
+                    </li>
+                <% } %>
+            </ul>
+        <% } %>
+
+        <div style="text-align:center; margin-top: 2rem;">
+            <button><a href="/new"><i class="fa-solid fa-plus"></i> Add New Announcement</a></button>
+        </div>
+
     </div>
 
     <footer>

@@ -4,36 +4,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Announcement</title>
+    <title>New Announcement · Campus Bulletin</title>
     <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 
 <body>
     <div class="container">
-        <h1>Create New Announcement</h1>
+        <div class="page-icon"><i class="fa-solid fa-bullhorn"></i></div>
+        <h1>New Announcement</h1>
+        <p class="page-subtitle">Fill in the details below to publish a new campus announcement.</p>
+
         <form action="/new" method="POST">
             <label for="title">Title</label>
-            <input type="text" id="title" name="title" placeholder="Enter title" required>
+            <input type="text" id="title" name="title" placeholder="Give it a clear, catchy title" required>
 
             <label for="content">Content</label>
-            <textarea id="content" name="content" rows="5" placeholder="Enter announcement content" required></textarea>
+            <textarea id="content" name="content" rows="5" placeholder="Describe the event or announcement in detail..." required></textarea>
 
             <label for="category">Category</label>
-            <input type="text" id="category" name="category" placeholder="Category" value="" required>
+            <input type="text" id="category" name="category" placeholder="e.g. Sports, Cultural, Academic" required>
 
-            <label for="event_date">Date</label>
-            <input type="date" id="event_date" name="event_date" placeholder="Date" value="" required>
+            <label for="event_date">Event Date</label>
+            <input type="date" id="event_date" name="event_date" required>
 
             <label for="venue">Venue</label>
-            <input type="text" id="venue" name="venue" placeholder="Venue" value="" required>
+            <input type="text" id="venue" name="venue" placeholder="e.g. Main Auditorium, Ground Floor" required>
 
-            <label for="roles">roles</label>
-            <input type="text" id="roles" name="roles" placeholder="roles" value="" required>
+            <label for="roles">Posted By (Role)</label>
+            <input type="text" id="roles" name="roles" placeholder="e.g. Student Council, Faculty" required>
 
-            <button type="submit">Submit</button>
+            <div class="btn-group" style="justify-content:flex-start;">
+                <button type="submit"><i class="fa-solid fa-paper-plane"></i> Publish Announcement</button>
+            </div>
         </form>
-        <div style="text-align: center; margin-top: 1rem;">
-            <a href="/admin" style="font-weight: bold;"> Back to Admin Dashboard</a>
+
+        <div class="back-link">
+            <a href="/admin"><i class="fa-solid fa-arrow-left"></i> Back to Admin Dashboard</a>
         </div>
     </div>
 </body>

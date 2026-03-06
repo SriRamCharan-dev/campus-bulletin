@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Campus Bulletin</title>
     <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 
 <body class="loading">
@@ -15,85 +16,101 @@
         <dotlottie-player src="https://lottie.host/8ccb8fa1-c7ac-44a3-869d-80adc5371730/4T5V4nvwBM.lottie"
             background="transparent" speed="1" style="width: 300px; height: 300px;" loop autoplay>
         </dotlottie-player>
+        <span class="splash-label">Campus Bulletin</span>
     </div>
 
     <div id="main-content">
         <div class="container">
-            <h1>Campus News & Events</h1>
-            <p style="text-align: center; margin-bottom: 2rem; color: var(--text-secondary);">Stay updated with the
-                latest
-                happenings on campus. Mark your interest and save events!</p>
-            <ul>
-                <% for(let announcement of announcements) { %>
-                    <li>
-                        <h2>
-                            <%= announcement.title %>
-                        </h2>
-                        <p class="card-id">ID: <%= announcement.id %>
-                        </p>
-                        <p>
-                            <%= announcement.content %>
-                        </p>
-                        <p class="meta-info">
-                            <strong>Category:</strong>
-                            <%= announcement.category %><br>
-                                <strong>Date:</strong>
-                                <%= announcement.event_date %><br>
-                                    <strong>Venue:</strong>
-                                    <%= announcement.venue %><br>
-                                        <strong>posted on:</strong>
-                                        <%= announcement.created_at %>
-                                            <strong>posted by:</strong>
-                                            <%= announcement.roles %>
-                        </p>
-                        <div style="margin-top: 1rem;">
-                            <form action="/interested/<%= announcement.id %>" method="POST"
-                                style="display: inline; padding: 0; box-shadow: none; border: none; background: transparent;">
-                                <button type="submit">Interested</button>
-                            </form>
-                            <% var dateObj=new Date(announcement.event_date); var y=dateObj.getFullYear(); var
-                                m=String(dateObj.getMonth() + 1).padStart(2, '0' ); var
-                                d=String(dateObj.getDate()).padStart(2, '0' ); var dateStr="" + y + m + d; var
-                                nextDay=new Date(dateObj); nextDay.setDate(nextDay.getDate() + 1); var
-                                ny=nextDay.getFullYear(); var nm=String(nextDay.getMonth() + 1).padStart(2, '0' ); var
-                                nd=String(nextDay.getDate()).padStart(2, '0' ); var endStr="" + ny + nm + nd; var
-                                gCalUrl="https://calendar.google.com/calendar/render?action=TEMPLATE&text=" +
-                                encodeURIComponent(announcement.title) + "&details=" +
-                                encodeURIComponent(announcement.content) + "&location=" +
-                                encodeURIComponent(announcement.venue) + "&dates=" + dateStr + "/" + endStr; %>
-                                <a href="<%= gCalUrl %>" target="_blank" rel="noopener noreferrer"
-                                    style="text-decoration: none;">
-                                    <button type="button"
-                                        style="background-color: var(--text-secondary); margin-top: 0;">Add to
-                                        Calendar</button>
-                                </a>
-                        </div>
-                    </li>
-                    <% } %>
-            </ul>
-            <div style="text-align: center; margin-top: 2rem;">
-                <a href="/login" style="font-weight: bold;">Logout / Admin Login</a>
+
+            <div class="top-actions">
+                <div class="nav-brand">
+                    <span class="nav-dot"></span>
+                    Campus Bulletin
+                </div>
+                <a href="/login" class="logout-link">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout / Admin
+                </a>
             </div>
+
+            <div class="page-icon"><i class="fa-solid fa-newspaper"></i></div>
+            <h1>Campus News & Events</h1>
+            <p class="page-subtitle">Stay updated with the latest happenings on campus.<br>Mark your interest and save events to your calendar!</p>
+
+            <% if (announcements.length === 0) { %>
+                <div class="empty-state">
+                    <span class="empty-icon"><i class="fa-solid fa-envelope-open"></i></span>
+                    <h3>No announcements yet</h3>
+                    <p>Check back soon — new campus events and news will appear here.</p>
+                </div>
+            <% } else { %>
+                <ul>
+                    <% const badgeClasses = ['badge-blue','badge-purple','badge-green','badge-orange','badge-teal']; %>
+                    <% for(let announcement of announcements) { %>
+                        <%
+                            let hash = 0;
+                            for (let c of (announcement.category || '')) hash = (hash * 31 + c.charCodeAt(0)) & 0xff;
+                            const badgeClass = badgeClasses[hash % badgeClasses.length];
+                        %>
+                        <li>
+                            <% if (announcement.category) { %>
+                                <span class="badge <%= badgeClass %>"><%= announcement.category %></span>
+                            <% } %>
+                            <h2><%= announcement.title %></h2>
+                            <p><%= announcement.content %></p>
+                            <p class="meta-info">
+                                <strong><i class="fa-solid fa-calendar-days"></i> Date:</strong> <%= announcement.event_date %><br>
+                                <strong><i class="fa-solid fa-location-dot"></i> Venue:</strong> <%= announcement.venue %><br>
+                                <strong><i class="fa-solid fa-clock"></i> Posted on:</strong> <%= announcement.created_at %> &nbsp;
+                                <strong><i class="fa-solid fa-user"></i> by</strong> <%= announcement.roles %>
+                            </p>
+                            <div class="btn-group">
+                                <form action="/interested/<%= announcement.id %>" method="POST"
+                                    style="display:contents; padding:0; box-shadow:none; border:none; background:transparent;">
+                                    <button type="submit"><i class="fa-solid fa-heart"></i> Interested</button>
+                                </form>
+                                <%
+                                    var dateObj = new Date(announcement.event_date);
+                                    var y  = dateObj.getFullYear();
+                                    var m  = String(dateObj.getMonth() + 1).padStart(2, '0');
+                                    var d  = String(dateObj.getDate()).padStart(2, '0');
+                                    var dateStr = "" + y + m + d;
+                                    var nextDay = new Date(dateObj);
+                                    nextDay.setDate(nextDay.getDate() + 1);
+                                    var ny = nextDay.getFullYear();
+                                    var nm = String(nextDay.getMonth() + 1).padStart(2, '0');
+                                    var nd = String(nextDay.getDate()).padStart(2, '0');
+                                    var endStr = "" + ny + nm + nd;
+                                    var gCalUrl = "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" +
+                                        encodeURIComponent(announcement.title) +
+                                        "&details=" + encodeURIComponent(announcement.content) +
+                                        "&location=" + encodeURIComponent(announcement.venue) +
+                                        "&dates=" + dateStr + "/" + endStr;
+                                %>
+                                <a href="<%= gCalUrl %>" target="_blank" rel="noopener noreferrer">
+                                    <button type="button" class="cal-btn"><i class="fa-solid fa-calendar-plus"></i> Add to Calendar</button>
+                                </a>
+                            </div>
+                        </li>
+                    <% } %>
+                </ul>
+            <% } %>
+
         </div>
 
         <footer>
-            <p>&copy; 2024 Campus Bulletin. Stay Connected.</p>
+            <p>&copy; 2024 Campus Bulletin &mdash; Stay Connected.</p>
         </footer>
     </div>
 
     <script>
         window.addEventListener('load', () => {
-            const splash = document.getElementById('splash-screen');
+            const splash  = document.getElementById('splash-screen');
             const content = document.getElementById('main-content');
-
             setTimeout(() => {
                 splash.classList.add('fade-out');
                 content.classList.add('visible');
                 document.body.classList.remove('loading');
-
-                setTimeout(() => {
-                    splash.style.display = 'none';
-                }, 1000);
+                setTimeout(() => { splash.style.display = 'none'; }, 1000);
             }, 2500);
         });
     </script>
