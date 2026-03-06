@@ -1,6 +1,8 @@
 # Campus Bulletin
+![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/SriRamCharan-dev/campus-bulletin?utm_source=oss&utm_medium=github&utm_campaign=SriRamCharan-dev%2Fcampus-bulletin&labelColor=171717&color=FF570A&link=https%3A%2F%2Fcoderabbit.ai&label=CodeRabbit+Reviews)
 
 A modern, full-stack web application for managing campus announcements and events. Built with Node.js, Express, and MySQL, featuring a beautiful glass-morphism UI design.
+
 
 ## 🌐 Live Demo
 
